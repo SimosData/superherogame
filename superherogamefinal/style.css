@@ -1,0 +1,889 @@
+/* ==========================================================================
+   Global Styles & Resets
+   ========================================================================== */
+body {
+    /* Background properties managed by JavaScript */
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed; /* Keeps background fixed during scroll */
+    min-height: 100vh;
+    margin: 0;
+    padding: 0; /* Reset default padding */
+    padding-top: 10px; /* Add some space above the title */
+    transition: background-image 1s ease-in-out; /* Smooth background transition */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Improved font stack */
+    display: flex; /* Use flexbox for overall layout */
+    flex-direction: column; /* Stack elements vertically */
+    align-items: center; /* Center items horizontally */
+    color: #333; /* Default text color */
+    /* Improve touch interaction feedback */
+    -webkit-tap-highlight-color: transparent;
+    user-select: none; /* Prevent text selection interfering with taps */
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    touch-action: manipulation; /* Improve touch responsiveness */
+}
+
+/* ==========================================================================
+   Typography
+   ========================================================================== */
+h1 {
+    text-align: center;
+    margin-top: 0; /* Adjusted margin as body has padding-top */
+    margin-bottom: 25px; /* Increased margin for better spacing */
+    color: #f0f0f0; /* Base light color for the text */
+    font-size: 2.8em; /* Make title larger */
+    font-weight: bold;
+    letter-spacing: 2px; /* Add some letter spacing */
+
+    /* --- 3D Glowing Green/Red Effect --- */
+    text-shadow:
+        /* Base shadow for depth */
+        0 1px 0 #ccc,
+        0 2px 0 #c9c9c9,
+        0 3px 0 #bbb,
+        0 4px 0 #b9b9b9,
+        0 5px 0 #aaa,
+        /* Slight offset for 3D feel */
+        0 6px 1px rgba(0,0,0,.1),
+        0 0 5px rgba(0,0,0,.1),
+        /* Green Glow */
+        0 0 10px rgb(255, 0, 0), /* Inner green glow */
+        0 0 20px rgb(34, 0, 255), /* Middle green glow */
+        0 0 35px rgba(0, 255, 8, 0.812), /* Outer green glow */
+        /* Red Glow */
+        0 0 15px rgb(255, 0, 0), /* Inner red glow (offset slightly) */
+        0 0 30px rgba(255, 0, 0, 0.5), /* Middle red glow */
+        0 0 50px rgb(64, 255, 0); /* Outer red glow */
+}
+
+/* ==========================================================================
+   Layout Containers & Areas
+   ========================================================================== */
+
+/* --- Zoom Container --- */
+#zoom-container {
+    width: 100%; /* Take full width */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Default transition for non-pinch transforms (if any) */
+    transition: transform 0.2s ease-out; /* Slightly slower default transition */
+    /* Set origin for scaling (can be changed by JS) */
+    transform-origin: center center;
+    /* Performance hint: Prepare for transform changes */
+    will-change: transform;
+}
+
+/* <<< NEW CLASS >>> */
+/* Add this class via JS during pinch to disable transitions */
+#zoom-container.no-transition {
+    transition: none; /* Disable transitions while pinching */
+}
+
+
+/* --- Status Area (Scoreboard, Lives, Time) --- */
+.status-area {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: center;
+    align-items: flex-start; /* Align items to the top */
+    gap: 20px 30px; /* Row gap, Column gap */
+    margin-bottom: 15px;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 8px;
+    width: 95%; /* Responsive width */
+    max-width: 900px; /* Max width for larger screens */
+}
+
+/* --- Scoreboard Section --- */
+.scoreboard {
+    display: flex;
+    flex-direction: column; /* Stack score items vertically */
+    align-items: center; /* Center items */
+    gap: 10px; /* Space between score items */
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #f0f0f0;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    min-width: 250px;
+    text-align: center;
+    position: relative; /* Needed for absolute positioning of the list */
+}
+
+.score-item {
+    display: flex; /* Align text and button */
+    align-items: center;
+    justify-content: center; /* Center content within item */
+    flex-wrap: wrap; /* Allow wrapping within item */
+    gap: 8px; /* Space between "Label:", number, and button */
+}
+
+.score-item span {
+    color: #ffd700; /* Gold color for scores */
+}
+
+/* --- High Score List Styles --- */
+.high-score-list {
+    display: none; /* Hidden by default */
+    position: absolute;
+    top: 100%; /* Position below the scoreboard */
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(30, 30, 30, 0.9); /* Dark background */
+    border: 1px solid #555;
+    border-radius: 0 0 8px 8px; /* Rounded bottom corners */
+    padding: 10px 15px;
+    z-index: 10; /* Above game board, below overlays/banners */
+    min-width: 280px; /* Minimum width */
+    max-width: 90%; /* Prevent overflow on small screens */
+    max-height: 300px; /* Limit height */
+    overflow-y: auto; /* Add scroll if list is long */
+    text-align: left; /* Align text left */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+.high-score-list.visible {
+    display: block; /* Show the list */
+}
+.high-score-list h4 {
+    margin: 0 0 10px 0;
+    text-align: center;
+    color: #ffd700;
+    border-bottom: 1px solid #555;
+    padding-bottom: 5px;
+}
+.high-score-list ol {
+    list-style: none; /* Remove default numbers */
+    padding: 0;
+    margin: 0;
+}
+.high-score-list li {
+    padding: 4px 0;
+    border-bottom: 1px dashed #444; /* Separator */
+    font-size: 0.9em;
+    display: flex; /* Use flex for alignment */
+    justify-content: space-between; /* Space out elements */
+    gap: 10px; /* Space between elements */
+}
+.high-score-list li:last-child {
+    border-bottom: none;
+}
+.rank-display {
+    font-style: italic;
+    color: #b0c4de; /* Light steel blue */
+    min-width: 80px; /* Give rank some space */
+    flex-shrink: 0; /* Prevent rank from shrinking */
+}
+.name-display {
+    flex-grow: 1; /* Allow name to take up space */
+    overflow: hidden; /* Prevent long names breaking layout */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.score-value-display {
+    font-weight: bold;
+    color: #ffd700;
+}
+
+/* --- Lives Display Area --- */
+.lives-display {
+    min-width: 90px; /* Slightly reduced min-width */
+    text-align: center;
+    font-size: 1em; /* Slightly reduced font size */
+    color: #f0f0f0; /* Light text color */
+    font-weight: bold;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+}
+
+.heart-symbol {
+    color: red; /* Make the heart red */
+    font-size: 1.2em; /* Slightly reduced heart size */
+    margin-right: 4px; /* Space between heart and text */
+    vertical-align: middle; /* Align heart nicely with text */
+}
+
+/* --- Time Controls Container --- */
+.time-controls-container {
+    display: flex;
+    flex-wrap: wrap; /* Allow wrapping on smaller screens */
+    justify-content: center;
+    align-items: center;
+    gap: 15px 20px; /* Row gap, Column gap */
+    color: #eee;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+    font-size: 0.95em; /* Base size for this section */
+    flex-grow: 1; /* Allow it to take space if needed */
+}
+
+/* --- Real Time Clock --- */
+.clock-display {
+    font-weight: bold;
+    background-color: rgba(0, 0, 0, 0.3);
+    padding: 5px 10px;
+    border-radius: 5px;
+    min-width: 80px;
+    text-align: center;
+}
+#real-time-clock {
+    color: #a2d2ff; /* Light blue */
+}
+
+/* --- Timer Settings --- */
+.timer-settings {
+    display: flex;
+    flex-direction: column; /* Stack toggle and adjust */
+    align-items: center;
+    gap: 8px;
+}
+
+.timer-toggle {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+}
+.timer-toggle input[type="checkbox"] {
+    margin-right: 8px;
+    cursor: pointer;
+    /* Optional: Style checkbox */
+    accent-color: #4CAF50; /* Green check */
+}
+
+.timer-adjust {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.timer-duration-display {
+    font-weight: bold;
+    min-width: 80px; /* Ensure space */
+    text-align: center;
+}
+#timer-duration {
+    color: #ffd700; /* Gold */
+}
+
+/* --- Countdown Timer Display --- */
+.countdown-display {
+    font-weight: bold;
+    font-size: 1.1em; /* Slightly larger */
+    background-color: rgba(80, 0, 0, 0.4); /* Dark red background */
+    padding: 5px 10px;
+    border-radius: 5px;
+    min-width: 120px;
+    text-align: center;
+}
+#time-left {
+    color: #ffc107; /* Amber/Yellow */
+    font-family: 'Courier New', Courier, monospace; /* Monospace font */
+}
+#time-left.low-time { /* Style for when time is low */
+    color: #dc3545; /* Red */
+    animation: pulse-red 1s infinite;
+}
+
+/* --- Audio & Vibration Controls Group --- */
+.audio-vibration-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between sound and vibration buttons */
+}
+
+/* --- Game Board Layout --- */
+.game-board {
+    display: grid;
+    /* Grid dimensions controlled by CSS variables set via JavaScript */
+    grid-template-columns: repeat(var(--grid-cols, 4), 1fr); /* Use fractions for responsiveness */
+    grid-template-rows: repeat(var(--grid-rows, 4), auto); /* Auto rows based on content/aspect ratio */
+
+    /* Define base sizes and gap - used by card size multiplier */
+    --card-base-width: 75px;  /* Adjust as needed */
+    --card-base-height: 105px; /* Adjust as needed */
+    --card-base-gap: 8px;    /* Adjust as needed */
+    --card-size-multiplier: 1; /* Default multiplier - JS will change this */
+
+    /* Apply the multiplier to the gap */
+    gap: calc(var(--card-base-gap) * var(--card-size-multiplier));
+
+    justify-content: center; /* Center grid horizontally */
+    padding: 15px; /* Padding around the grid */
+    perspective: 1000px; /* For the 3D card flip effect */
+    margin: 20px auto; /* Vertical margin and auto horizontal centering */
+    width: fit-content; /* Size grid to content */
+    max-width: 95%; /* Prevent overflow on very small screens */
+}
+
+/* ==========================================================================
+   Controls & Buttons
+   ========================================================================== */
+
+/* --- Base Button Style (for subtle active feedback) --- */
+button {
+    transition: transform 0.1s ease-out, opacity 0.1s ease-out;
+    cursor: pointer;
+}
+button:active {
+    transform: scale(0.95);
+    opacity: 0.85;
+}
+
+/* --- Difficulty Controls --- */
+.difficulty-controls {
+    text-align: center;
+    margin-bottom: 25px; /* Space below buttons */
+    display: flex; /* Use flexbox for better wrapping control */
+    flex-wrap: wrap; /* Allow buttons to wrap */
+    justify-content: center; /* Center buttons */
+    gap: 6px; /* Consistent gap between buttons */
+    padding: 0 10px; /* Prevent sticking to edges */
+}
+
+.difficulty-btn {
+    padding: 8px 14px; /* Reduced padding */
+    font-size: 0.9em; /* Reduced font size */
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: rgba(240, 240, 240, 0.8); /* Slightly transparent white */
+    color: #333; /* Dark text */
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s, transform 0.1s ease-out;
+}
+
+.difficulty-btn:hover {
+    background-color: rgba(224, 224, 224, 0.9); /* Slightly darker on hover */
+    border-color: #aaa;
+}
+
+.difficulty-btn.active {
+    background-color: rgba(74, 144, 226, 0.9); /* Blue background for active */
+    color: white; /* White text for active */
+    border-color: #357abd; /* Darker blue border */
+}
+
+/* --- Scoreboard Buttons --- */
+.reset-btn {
+    background: none;
+    border: 1px solid #aaa;
+    color: #ffc107; /* Amber/Yellow */
+    font-size: 0.8em; /* Smaller than text */
+    padding: 2px 5px;
+    border-radius: 4px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s, color 0.2s, transform 0.1s ease-out;
+}
+.reset-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.toggle-scores-btn {
+    background: none;
+    border: 1px solid #aaa;
+    color: #a2d2ff; /* Light blue */
+    font-size: 0.8em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s, color 0.2s, transform 0.2s;
+}
+.toggle-scores-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+.toggle-scores-btn.open {
+    transform: rotate(180deg); /* Point arrow up when open */
+}
+
+/* --- Lives Controls --- */
+.lives-controls {
+    display: flex; /* Arrange items horizontally */
+    align-items: center; /* Vertically align items */
+    justify-content: center; /* Center the whole control block */
+    gap: 15px; /* Space between buttons and display */
+}
+
+.life-btn {
+    padding: 0; /* Remove padding as size is fixed */
+    font-size: 1em;
+    font-weight: bold;
+    line-height: 1; /* Ensure text fits vertically */
+    cursor: pointer;
+    border: 2px solid #ccc;
+    border-radius: 50%; /* Make buttons circular */
+    width: 28px;  /* Slightly increased */
+    height: 28px; /* Slightly increased */
+    background-color: rgba(240, 240, 240, 0.8);
+    color: #333;
+    transition: background-color 0.3s, border-color 0.3s, color 0.3s, transform 0.1s ease-out;
+    display: flex; /* Center content inside button */
+    align-items: center;
+    justify-content: center;
+}
+
+.life-btn:hover {
+    background-color: rgba(224, 224, 224, 0.9);
+    border-color: #aaa;
+}
+
+.life-btn:disabled { /* Style for disabled buttons */
+    background-color: rgba(180, 180, 180, 0.6);
+    border-color: #999;
+    color: #777;
+    cursor: not-allowed;
+    transform: none; /* Disable active transform */
+    opacity: 0.7;
+}
+
+/* --- Timer Adjustment Buttons --- */
+.timer-adj-btn {
+    padding: 3px 8px;
+    font-size: 1em;
+    font-weight: bold;
+    line-height: 1;
+    cursor: pointer;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    background-color: rgba(220, 220, 220, 0.8);
+    color: #333;
+    transition: background-color 0.2s, transform 0.1s ease-out;
+}
+.timer-adj-btn:hover {
+    background-color: rgba(200, 200, 200, 0.9);
+}
+.timer-adj-btn:disabled {
+    background-color: rgba(180, 180, 180, 0.6);
+    border-color: #999;
+    color: #777;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+}
+
+/* --- Sound Toggle Button --- */
+.sound-btn {
+    background: none;
+    border: 1px solid #aaa;
+    color: #eee; /* White icon */
+    font-size: 1.2em; /* Make icon a bit larger */
+    padding: 0; /* Remove padding */
+    border-radius: 5px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s, color 0.2s, transform 0.1s ease-out;
+    width: 35px; /* Fixed width */
+    height: 30px; /* Match height roughly */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.sound-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.sound-btn.sound-off {
+    color: #dc3545; /* Red when muted */
+}
+
+/* --- Vibration Toggle Button --- */
+.vibration-btn {
+    background: none;
+    border: 1px solid #aaa;
+    color: #eee; /* White icon */
+    font-size: 1.2em; /* Match sound button */
+    padding: 0; /* Remove padding */
+    border-radius: 5px;
+    cursor: pointer;
+    line-height: 1;
+    transition: background-color 0.2s, color 0.2s, opacity 0.2s, transform 0.1s ease-out;
+    width: 35px; /* Match sound button */
+    height: 30px; /* Match sound button */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative; /* For potential ::after styling */
+}
+.vibration-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+.vibration-btn.vibration-off {
+    opacity: 0.5; /* Make it look disabled */
+    color: #aaa; /* Grey out icon */
+}
+/* Optional: Add a line-through effect for vibration-off state */
+/*
+.vibration-btn.vibration-off::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 15%;
+    width: 70%;
+    height: 2px;
+    background-color: #dc3545; // Red line
+    transform: translateY(-50%) rotate(-45deg);
+    pointer-events: none;
+}
+*/
+
+/* --- Main Game Controls (Restart, Pause/Play, Size, Fullscreen) --- */
+.game-controls {
+    text-align: center;
+    margin-bottom: 20px; /* Keep some space */
+    display: flex; /* Arrange side-by-side */
+    flex-wrap: wrap; /* Allow wrapping */
+    justify-content: center;
+    gap: 10px 15px; /* Row gap, Column gap */
+}
+
+.control-btn {
+    padding: 8px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    cursor: pointer;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    background-color: rgba(200, 200, 200, 0.8); /* Default greyish */
+    color: #222;
+    transition: background-color 0.2s, border-color 0.2s, color 0.2s, transform 0.1s ease-out;
+}
+.control-btn:hover {
+    background-color: rgba(180, 180, 180, 0.9);
+    border-color: #aaa;
+}
+
+/* Restart Button Specific */
+#btn-restart.restarting { /* Temporary class when clicked */
+    background-color: rgba(40, 167, 69, 0.9); /* Green */
+    border-color: #1e7e34;
+    color: white;
+}
+
+/* Pause/Play Button States */
+#btn-pause-play.playing { /* Actually means "Click to Pause" */
+    background-color: rgba(255, 193, 7, 0.9); /* Yellow/Amber for Pause */
+    border-color: #b8860b;
+    color: #212529; /* Dark text */
+}
+#btn-pause-play.paused { /* Actually means "Click to Play" */
+    background-color: rgba(40, 167, 69, 0.9); /* Green for Play */
+    border-color: #1e7e34;
+    color: white;
+}
+
+/* Card Size Buttons */
+.card-size-btn {
+    padding: 8px 12px; /* Slightly less horizontal padding */
+    font-size: 1.1em; /* Make +/- slightly larger */
+    line-height: 1;
+}
+.card-size-btn:disabled {
+    background-color: rgba(180, 180, 180, 0.6);
+    border-color: #999;
+    color: #777;
+    cursor: not-allowed;
+    transform: none;
+    opacity: 0.7;
+}
+
+/* Fullscreen Button */
+#btn-fullscreen {
+    font-size: 1.2em; /* Make icon slightly larger */
+    padding: 8px 12px;
+}
+
+
+/* ==========================================================================
+   Card Styles
+   ========================================================================== */
+.card {
+    /* Apply the multiplier to width and height */
+    width: calc(var(--card-base-width) * var(--card-size-multiplier));
+    height: calc(var(--card-base-height) * var(--card-size-multiplier));
+
+    position: relative;
+    transform-style: preserve-3d; /* Enable 3D transformations */
+    transition: transform 0.6s cubic-bezier(0.4, 0.0, 0.2, 1); /* Smoother flip */
+    cursor: pointer;
+    background-color: transparent; /* Needed for flip effect */
+    border-radius: 5px;
+    box-shadow: 1px 1px 5px rgba(0,0,0,0.2); /* Subtle shadow */
+    backface-visibility: hidden; /* Performance */
+    -webkit-backface-visibility: hidden;
+}
+
+/* --- Card State Styles --- */
+.card.is-flipped {
+    transform: rotateY(180deg); /* Apply the flip rotation */
+}
+
+.card.is-matched {
+    /* Optional: Make matched cards slightly transparent */
+    /* opacity: 0.7; */
+    /* Optional: Add a border or effect */
+    /* box-shadow: 0 0 10px 3px gold; */
+    cursor: default; /* Indicate non-interactive */
+    /* Prevent further interaction visually */
+    pointer-events: none;
+}
+/* Add a subtle animation for matched cards */
+@keyframes matched-pulse {
+  0% { transform: scale(1); box-shadow: 1px 1px 5px rgba(0,0,0,0.2); }
+  50% { transform: scale(1.03); box-shadow: 0 0 8px 2px gold; }
+  100% { transform: scale(1); box-shadow: 1px 1px 5px rgba(0,0,0,0.2); }
+}
+.card.is-matched {
+    animation: matched-pulse 0.6s ease-in-out;
+}
+
+
+/* --- Card Face Common Styles --- */
+.card-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden; /* Hide the side facing away */
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 5px; /* Match card border radius */
+    overflow: hidden; /* Prevent content spill */
+}
+
+/* --- Card Front Face (Pattern) --- */
+.card-face--front {
+    background-image: url('textures/card_pattern.jpg'); /* Path to your pattern */
+    background-size: cover; /* Cover the face */
+    background-position: center; /* Center the pattern */
+    background-repeat: no-repeat; /* No tiling */
+    /* Ensure no text/color interferes */
+    background-color: transparent;
+    color: transparent;
+}
+
+/* --- Card Back Face (Image) --- */
+.card-face--back {
+    background-color: #f7f7f7; /* Light background for the image */
+    color: #333; /* Default text color (if any) */
+    transform: rotateY(180deg); /* Start rotated away */
+    /* Ensure the back face itself fills the card */
+    width: 100%;
+    height: 100%;
+    /* Hide any overflow if the image is slightly larger */
+    overflow: hidden;
+    /* Optional: Add if you need specific positioning */
+    position: relative;
+}
+
+/* --- Image Styling within Card Back --- */
+.card-face--back img {
+    display: block; /* Removes potential extra space below the image */
+    width: 100%;    /* Make image width fill the container */
+    height: 100%;   /* Make image height fill the container */
+    object-fit: cover; /* Scales the image while preserving aspect ratio,
+                          covering the entire container. May crop edges. */
+    /* Remove max-width/max-height constraints */
+    /* max-width: 90%; */
+    /* max-height: 90%; */
+}
+
+/* ==========================================================================
+   Overlays & Banners
+   ========================================================================== */
+
+/* --- Win/Lose Overlay Styles --- */
+.overlay {
+    position: fixed; /* Position relative to the viewport */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7); /* Semi-transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it's on top, below banners */
+    opacity: 0; /* Start hidden */
+    visibility: hidden; /* Start hidden */
+    transition: opacity 0.5s ease-in-out, visibility 0s 0.5s; /* Delay visibility change */
+    pointer-events: none; /* Don't block interactions when hidden */
+}
+
+.overlay img {
+    max-width: 80%; /* Limit image size */
+    max-height: 80%;
+    border-radius: 15px; /* Optional rounded corners */
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); /* Optional glow */
+}
+
+/* Style to show the overlay */
+.overlay.visible {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s ease-in-out, visibility 0s 0s; /* Show immediately */
+    pointer-events: auto; /* Allow interaction when visible */
+}
+
+/* --- Banner Base Styles --- */
+.banner {
+    position: fixed; /* Position relative to viewport */
+    top: 20%; /* Position it near the top */
+    left: 50%;
+    transform: translateX(-50%) perspective(500px) rotateX(20deg) scale(0.8); /* Initial 3D position & scale */
+    padding: 15px 30px;
+    /* background/border/shadow defined by specific banner types */
+    color: white;
+    font-size: clamp(1.2em, 4vw, 1.8em); /* Responsive font size */
+    font-weight: bold;
+    border-radius: 10px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    z-index: 1001; /* Above overlays */
+    opacity: 0; /* Start hidden */
+    visibility: hidden; /* Start hidden */
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out, visibility 0s 0.5s; /* Smooth transitions, delay visibility */
+    white-space: nowrap; /* Prevent text wrapping */
+    text-align: center;
+    pointer-events: none; /* Banners are usually just informational */
+}
+
+/* State when any banner is visible */
+.banner.visible {
+    transform: translateX(-50%) perspective(500px) rotateX(0deg) scale(1); /* Animate to final position */
+    opacity: 1;
+    visibility: visible;
+    transition: transform 0.5s ease-out, opacity 0.5s ease-out, visibility 0s 0s; /* Adjust visibility transition */
+}
+
+/* --- Green Special Match Banner Specific Styles --- */
+#special-match-banner {
+    background: linear-gradient(145deg, #33cc33, #28a745); /* Green gradient */
+    border: 2px solid #90ee90; /* Light green border */
+    box-shadow: 0 0 15px 5px #33cc33, /* Green glow */
+                0 5px 10px rgba(0, 0, 0, 0.4); /* Drop shadow */
+}
+
+/* --- Red Win Banner Specific Styles --- */
+#win-banner.red-banner { /* More specific selector */
+    /* Optional: Adjust position slightly if desired, e.g., below special banner */
+    /* top: 35%; */
+    background: linear-gradient(145deg, #dc3545, #c82333); /* Red gradient */
+    border: 2px solid #f5c6cb; /* Light red border */
+    box-shadow: 0 0 15px 5px #dc3545, /* Red glow */
+                0 5px 10px rgba(0, 0, 0, 0.4); /* Drop shadow */
+}
+
+/* --- Purple Lose Banner Specific Styles --- */
+#lose-banner.purple-banner { /* More specific selector */
+    /* Optional: Adjust position if desired */
+    /* top: 50%; */
+    background: linear-gradient(145deg, #6f42c1, #5a32a3); /* Purple gradient */
+    border: 2px solid #d6bbfb; /* Light purple border */
+    box-shadow: 0 0 15px 5px #6f42c1, /* Purple glow */
+                0 5px 10px rgba(0, 0, 0, 0.4); /* Drop shadow */
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+@keyframes pulse-red {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* ==========================================================================
+   Media Queries (Responsive Adjustments)
+   ========================================================================== */
+
+/* Example: Smaller screens / Portrait Mobile */
+@media (max-width: 600px) {
+    h1 {
+        font-size: 2em; /* Smaller title */
+        margin-bottom: 15px;
+    }
+    .status-area {
+        gap: 10px 15px; /* Reduce gaps */
+        padding: 8px 10px;
+    }
+    .scoreboard {
+        font-size: 1em;
+    }
+    .time-controls-container {
+        font-size: 0.85em;
+        gap: 10px 15px;
+    }
+    .difficulty-controls {
+        margin-bottom: 15px;
+    }
+    .difficulty-btn {
+        padding: 6px 10px;
+        font-size: 0.8em;
+    }
+    .game-controls {
+        margin-bottom: 15px;
+        gap: 10px; /* Reduced gap for smaller screens */
+    }
+    .control-btn {
+        padding: 6px 15px;
+        font-size: 0.9em;
+    }
+    .game-board {
+        padding: 10px;
+        /* Adjust base sizes for smaller screens if needed */
+        /* --card-base-width: 60px; */
+        /* --card-base-height: 84px; */
+        /* --card-base-gap: 5px; */
+    }
+    .banner {
+        padding: 10px 20px;
+        /* Font size already clamped */
+    }
+    .high-score-list {
+        min-width: 240px;
+    }
+}
+
+/* Example: Landscape Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    h1 {
+        font-size: 1.8em;
+        margin-bottom: 10px;
+    }
+    body {
+        padding-top: 5px;
+    }
+    .status-area {
+        flex-direction: row; /* Try to keep status items in a row */
+        justify-content: space-around;
+        align-items: center; /* Center vertically */
+        padding: 5px 10px;
+        margin-bottom: 10px;
+    }
+    .time-controls-container {
+        justify-content: space-evenly;
+    }
+    .difficulty-controls {
+        margin-bottom: 10px;
+    }
+    .game-controls {
+        margin-bottom: 10px;
+    }
+    .game-board {
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 5px;
+        /* Adjust base sizes for landscape if needed */
+        /* --card-base-width: 55px; */
+        /* --card-base-height: 77px; */
+        /* --card-base-gap: 4px; */
+    }
+    .banner {
+        top: 10%; /* Move banners up slightly */
+        font-size: clamp(1em, 3vw, 1.5em);
+    }
+}

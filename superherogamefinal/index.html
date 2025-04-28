@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- Added user-scalable=no to potentially prevent zooming issues on mobile -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Superhero Memory Card Game</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Consider preloading important assets like background or card back -->
+    <!-- <link rel="preload" href="textures/background-medium.jpg" as="image"> -->
+</head>
+<body class="bg-medium"> <!-- Start with a default background class -->
+
+    <h1>Superhero Memory Game</h1>
+
+    <!-- *** Wrap main content in a zoom container *** -->
+    <div id="zoom-container">
+
+        <!-- Difficulty Controls -->
+        <div class="difficulty-controls">
+            <!-- Using data-difficulty for easier JS handling -->
+            <button class="difficulty-btn active" data-difficulty="easy">Easy (3x4)</button>
+            <button class="difficulty-btn" data-difficulty="medium">Medium (4x4)</button>
+            <button class="difficulty-btn" data-difficulty="hard">Hard (4x5)</button>
+            <button class="difficulty-btn" data-difficulty="extreme">Extreme (5x6)</button>
+            <button class="difficulty-btn" data-difficulty="god">God (8x8)</button>
+        </div>
+
+        <!-- Status Area: Contains Scoreboard, Lives, Time Controls -->
+        <div class="status-area">
+            <!-- Scoreboard -->
+            <div class="scoreboard">
+                <div class="score-item">Score: <span id="current-score">0</span></div>
+                <div class="score-item high-score-section">
+                    High Score: <span id="high-score">0</span>
+                    <button id="btn-reset-scores" class="reset-btn" title="Reset High Scores">♻️</button>
+                    <button id="btn-toggle-highscores" class="toggle-scores-btn" title="Show/Hide High Scores">▼</button>
+                </div>
+                <!-- High Score List Container (Initially Hidden) -->
+                <div id="high-score-list-container" class="high-score-list">
+                    <h4>Top Scores</h4>
+                    <ol id="high-score-list-ol">
+                        <!-- Scores will be populated here by JS -->
+                        <li>No scores yet!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Lives Controls -->
+            <div class="lives-controls">
+                <button id="btn-lives-down" class="life-btn" title="Decrease Starting Lives">-</button>
+                <span class="lives-display">
+                    <span class="heart-symbol">❤️</span> Lives: <span id="current-lives">3</span>
+                </span>
+                <button id="btn-lives-up" class="life-btn" title="Increase Starting Lives">+</button>
+            </div>
+
+            <!-- Clock, Timer & Settings Controls -->
+            <div class="time-controls-container">
+                <!-- Real Time Clock -->
+                <div class="clock-display">
+                    <span id="real-time-clock">00:00:00</span>
+                </div>
+
+                <!-- Timer Settings -->
+                <div class="timer-settings">
+                    <label class="timer-toggle">
+                        <input type="checkbox" id="timer-enabled-checkbox" checked> Use Timer
+                    </label>
+                    <div class="timer-adjust">
+                        <button id="btn-timer-minus" class="timer-adj-btn" title="Decrease Time">-</button>
+                        <span class="timer-duration-display">
+                            Time: <span id="timer-duration">5</span> min
+                        </span>
+                        <button id="btn-timer-plus" class="timer-adj-btn" title="Increase Time">+</button>
+                    </div>
+                </div>
+
+                <!-- Countdown Timer Display -->
+                <div class="countdown-display">
+                    Time Left: <span id="time-left">--:--</span>
+                </div>
+
+                <!-- Sound & Vibration Toggles -->
+                <div class="audio-vibration-controls">
+                     <button id="btn-sound-toggle" class="sound-btn sound-on" title="Mute/Unmute Sound">🔊</button>
+                     <!-- Added Vibration Toggle Button -->
+                     <button id="btn-vibration-toggle" class="vibration-btn vibration-on" title="Disable/Enable Vibration">📳</button>
+                </div>
+            </div>
+            <!-- End Clock, Timer & Settings Controls -->
+        </div> <!-- End Status Area -->
+
+
+       <!-- Main Game Controls -->
+        <div class="game-controls">
+            <button id="btn-restart" class="control-btn">Restart</button>
+            <button id="btn-pause-play" class="control-btn playing">Pause</button> <!-- Class indicates current state -->
+
+            <!-- Card Size Buttons -->
+            <button id="btn-card-size-decrease" class="control-btn card-size-btn" title="Decrease Card Size">-</button>
+            <button id="btn-card-size-increase" class="control-btn card-size-btn" title="Increase Card Size">+</button>
+
+            <!-- Fullscreen Button -->
+            <button id="btn-fullscreen" class="control-btn" title="Toggle Fullscreen">⛶</button>
+        </div>
+
+
+        <!-- Game Board -->
+        <div class="game-board" id="gameBoard">
+            <!-- Cards will be generated here by JavaScript -->
+        </div>
+
+        <!-- Win/Lose Overlay Elements -->
+        <div id="win-overlay" class="overlay">
+            <img src="textures/gold_cup.jpg" alt="You Win!">
+        </div>
+        <div id="lose-overlay" class="overlay">
+            <img src="textures/skull.jpg" alt="Game Over">
+        </div>
+
+        <!-- Banners for Messages -->
+        <div id="special-match-banner" class="banner">
+            Special Character Found! +1000 Points!
+        </div>
+        <div id="win-banner" class="banner red-banner">
+            You Winnnnn!!!!
+        </div>
+        <div id="lose-banner" class="banner purple-banner">
+             You Loseeee!!!
+        </div>
+
+    </div> <!-- *** End of zoom-container *** -->
+
+
+    <!-- Audio Elements (Hidden, controlled by JS) -->
+    <!-- Add your <audio> tags here if not already present -->
+    <!-- Example: -->
+    <!--
+    <audio id="sound-flip" src="sounds/flip.wav" preload="auto"></audio>
+    <audio id="sound-match" src="sounds/match.wav" preload="auto"></audio>
+    ... etc ...
+    -->
+
+    <!-- Defer script loading until HTML is parsed -->
+    <script src="script.js" defer></script>
+</body>
+</html>
